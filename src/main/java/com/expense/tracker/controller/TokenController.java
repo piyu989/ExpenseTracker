@@ -34,13 +34,17 @@ public class TokenController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @PostMapping("/auth/v1/login")
+    @PostMapping("/api/v1/login")
     public ResponseEntity autheticateAndGetToken(@RequestBody AuthRequestDto authRequestDto){
         try{
             Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDto.getEmail(), authRequestDto.getPassword()));
             if(authenticate.isAuthenticated()) {
                 String jwtToken = jwtService.generateToken(authRequestDto.getEmail());
-                String refreshToken = refreshTokenService.createRefreshToken(authRequestDto.getEmail()).getToken();
+                RefreshToken refreshToken = refreshTokenService.findByUserName(authRequestDto.getEmail()).get();
+                if(refreshToken!=null){
+                    refreshTokenService.verifyExpiration(refreshToken);
+                }
+//                String refreshToken = refreshTokenService.createRefreshToken(authRequestDto.getEmail()).getToken();
                 return new ResponseEntity(JwtResponseDto.builder()
                         .accessToken(jwtToken)
                         .refreshToken(refreshToken)
@@ -54,8 +58,9 @@ public class TokenController {
         }
     }
 
-    @PostMapping("/auth/v1/refreshToken")
+    @PostMapping("/api/v1/refreshToken")
     public JwtResponseDto refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
+        System.out.println(refreshTokenRequestDto);
         return refreshTokenService.findByToken(refreshTokenRequestDto.getRefreshToken())
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUserInfo)

@@ -43,6 +43,10 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByToken(token);
     }
 
+    public Optional<RefreshToken> findByUserName(String username) {
+        return refreshTokenRepository.findByUserInfoUsername(username);
+    }
+
      public void deleteByUserId(long userId){
         refreshTokenRepository.delete(refreshTokenRepository.findById(userId).orElseThrow((
                 ()-> new RuntimeException("User not found with id: " + userId))));

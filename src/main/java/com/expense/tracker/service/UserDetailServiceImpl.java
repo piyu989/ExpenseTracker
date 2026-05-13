@@ -53,7 +53,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
                     .username(userInfo.getUsername())
                     .roles(new HashSet<>())
                     .build();
-            userInfoRepository.save(userInfo);
+            userInfoRepository.save(user);
             return true;
         }catch (Exception e) {
             System.out.println("Error while signing up: " + e.getMessage());

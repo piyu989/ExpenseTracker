@@ -36,6 +36,7 @@ public class SecurityConfig {
 //        return new UserDetailServiceImpl(userInfoRepository,bCryptPasswordEncoder);
 //    }
 
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,JwtAuthFilter jwtFilter) throws Exception {
         http
                 .csrf().disable()

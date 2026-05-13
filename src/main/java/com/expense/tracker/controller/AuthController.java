@@ -32,6 +32,7 @@ public class AuthController {
     @PostMapping("/api/v1/signup")
     public ResponseEntity<?> signup(@RequestBody UserInfoDto userInfoDto){
         try{
+            System.out.println("Received signup request for username: " + userInfoDto.getUsername());
             boolean flag = userDetailService.signUp(userInfoDto);
             if(!flag){
                 return ResponseEntity.ok("User signed up successfully");
