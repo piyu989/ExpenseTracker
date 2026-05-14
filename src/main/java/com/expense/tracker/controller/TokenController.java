@@ -47,7 +47,7 @@ public class TokenController {
 //                String refreshToken = refreshTokenService.createRefreshToken(authRequestDto.getEmail()).getToken();
                 return new ResponseEntity(JwtResponseDto.builder()
                         .accessToken(jwtToken)
-                        .refreshToken(refreshToken)
+                        .refreshToken(refreshToken.toString())
                         .build(),
                         HttpStatus.OK);
             } else {

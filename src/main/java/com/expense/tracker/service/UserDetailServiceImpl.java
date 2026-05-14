@@ -1,6 +1,7 @@
 package com.expense.tracker.service;
 
 import com.expense.tracker.entities.UserInfo;
+import com.expense.tracker.eventproducer.UserInfoProducer;
 import com.expense.tracker.models.UserInfoDto;
 import com.expense.tracker.repository.UserInfoRepository;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,9 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserInfoProducer userInfoProducer;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserInfo userInfo = userInfoRepository.findByUsername(username);
@@ -48,12 +52,14 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 throw new RuntimeException("User already exist with username: " + userInfo.getUsername());
             }
             UserInfo user = UserInfo.builder()
-//                .userId(UUID.randomUUID().toString())
                     .password(userInfo.getPassword())
                     .username(userInfo.getUsername())
                     .roles(new HashSet<>())
                     .build();
             userInfoRepository.save(user);
+            System.out.println("User signed up successfully: " + user.getUsername());
+            userInfoProducer.sendEventToKafka(userInfo);
+//            System.out.println("User signed up successfully: );
             return true;
         }catch (Exception e) {
             System.out.println("Error while signing up: " + e.getMessage());
